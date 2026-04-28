@@ -10,7 +10,9 @@ const connectDB = async () => {
     const conn = await mongoose.connect(dbUri);
     logger.info(`MongoDB Connected successfully😍 (${process.env.NODE_ENV}): ${conn.connection.host}`);
   } catch (error) {
-    logger.error(`Error connecting to MongoDB: ${error.message}`);
+    logger.error(`❌ MongoDB Connection Error: ${error.message}`);
+    if (error.name === 'MongoParseError') logger.error('Check if your connection string is formatted correctly.');
+    if (error.name === 'MongoServerSelectionError') logger.error('Check your IP whitelisting in Atlas (0.0.0.0/0 recommended).');
     process.exit(1);
   }
 };
