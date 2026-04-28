@@ -18,7 +18,17 @@ import adminRoutes from './routes/adminRoutes.js';
 const app = express();
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+      connectSrc: ["'self'", "https://personal-finance-tracker-api-production-b458.up.railway.app"],
+    },
+  },
+}));
 app.use(cors());
 app.use(express.json());
 
