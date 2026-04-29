@@ -21,11 +21,11 @@ const app = express();
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
-      connectSrc: ["'self'", "https://personal-finance-tracker-api-production-b458.up.railway.app"],
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
+      "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
+      "connect-src": ["'self'", "https://personal-finance-tracker-api-mu.vercel.app", "https://personal-finance-tracker-api-production-b458.up.railway.app", "*"],
     },
   },
 }));
@@ -49,7 +49,15 @@ const apiLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 
 // API Documentation
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+const swaggerOptions = {
+  customCssUrl: "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.11.0/swagger-ui.css",
+  customJs: [
+    "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.11.0/swagger-ui-bundle.js",
+    "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js",
+  ],
+  customSiteTitle: "Personal Finance API Docs",
+};
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, swaggerOptions));
 
 // Mount routes
 app.use('/api/auth', authRoutes);
