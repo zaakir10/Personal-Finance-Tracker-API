@@ -7,14 +7,20 @@ const connectDB = async () => {
       ? process.env.MONGODB_URI_ATLAS
       : process.env.MONGODB_URI_LOCAL;
 
-    const conn = await mongoose.connect(dbUri);
-    logger.info(`MongoDB Connected successfully😍 (${process.env.NODE_ENV}): ${conn.connection.host}`);
+    if (!dbUri) {
+      throw new Error(`MongoDB URI is missing for ${process.env.NODE_ENV} mode`);
+    }
+
+    const conn = await mongoose.connect(dbUri, {
+      dbName: 'finance_tracker', // Explicitly setting database name
+    });
+    
+    logger.info(`MongoDB Connected successfully: ${conn.connection.host}`);
   } catch (error) {
     logger.error(`❌ MongoDB Connection Error: ${error.message}`);
-    if (error.name === 'MongoParseError') logger.error('Check if your connection string is formatted correctly.');
-    if (error.name === 'MongoServerSelectionError') logger.error('Check your IP whitelisting in Atlas (0.0.0.0/0 recommended).');
-    if (process.env.NODE_ENV !== 'production') {
-      process.exit(1);
+    // Hint for Vercel users
+    if (process.env.VERCEL) {
+      logger.error('Tip: Ensure you have added MONGODB_URI_ATLAS to Vercel Environment Variables and whitelisted 0.0.0.0/0 in Atlas.');
     }
   }
 };
