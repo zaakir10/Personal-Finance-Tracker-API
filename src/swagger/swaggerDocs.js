@@ -1,4 +1,9 @@
 import swaggerJsDoc from 'swagger-jsdoc';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -10,8 +15,10 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
-        description: 'Development Server',
+        url: process.env.NODE_ENV === 'production' 
+          ? 'https://personal-finance-tracker-api-mu.vercel.app' 
+          : `http://localhost:${process.env.PORT || 5000}`,
+        description: 'Current Server',
       },
     ],
     components: {
@@ -36,7 +43,10 @@ const swaggerOptions = {
       { name: 'Admin', description: 'Admin operations' }
     ],
   },
-  apis: ['./src/routes/*.js', './src/swagger/paths.js'], // Paths to files containing OpenAPI definitions
+  apis: [
+    path.join(__dirname, '../routes/*.js'),
+    path.join(__dirname, './paths.js')
+  ],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
