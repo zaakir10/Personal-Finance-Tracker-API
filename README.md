@@ -1,8 +1,7 @@
 # 💰 Personal Finance Tracker API
 
-A production-ready RESTful API for tracking personal income and expenses. Built with Node.js, Express, and MongoDB, featuring secure JWT authentication, detailed financial summaries, and interactive API documentation.
 
-![API Documentation Interface](assets/screenshot.png)
+A production-ready RESTful API for tracking personal income and expenses. Built with Node.js, Express, and MongoDB, featuring secure JWT authentication, detailed financial summaries, and interactive API documentation.
 
 ## 🚀 Live Demo
 The API is deployed and accessible at:
@@ -89,6 +88,6 @@ The interactive API documentation is available at the `/docs` endpoint. You can 
    ```
 
 ---
-
+**Developed by Eng zaakir**
 ## 📄 License
 This project is licensed under the ISC License.
