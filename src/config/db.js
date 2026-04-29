@@ -11,6 +11,11 @@ const connectDB = async () => {
       throw new Error(`MongoDB URI is missing for ${process.env.NODE_ENV} mode`);
     }
 
+    // In production (Vercel), disable buffering so we get immediate errors if not connected
+    if (process.env.NODE_ENV === 'production') {
+      mongoose.set('bufferCommands', false);
+    }
+
     const conn = await mongoose.connect(dbUri, {
       dbName: 'finance_tracker', // Explicitly setting database name
     });
