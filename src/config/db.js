@@ -3,6 +3,7 @@ import logger from './logger.js';
 
 const connectDB = async () => {
   try {
+    logger.info(`Attempting to connect to MongoDB in ${process.env.NODE_ENV} mode...`);
     const dbUri = process.env.NODE_ENV === 'production'
       ? process.env.MONGODB_URI_ATLAS
       : process.env.MONGODB_URI_LOCAL;

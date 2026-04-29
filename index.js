@@ -16,7 +16,7 @@ if (process.env.NODE_ENV !== 'production') {
 const PORT = process.env.PORT || 5000;
 
 // Connect to database
-connectDB();
+await connectDB();
 
 // Health check route
 app.get('/api/health', (req, res) => {
