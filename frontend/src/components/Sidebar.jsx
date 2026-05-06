@@ -26,7 +26,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, onAddClick, userRole }) =>
     <aside className="sidebar premium-sidebar">
       <div className="logo-section">
         <div className="logo-icon-bg">
-          <Wallet size={24} color="#fff" />
+          <img src="/logo.svg" alt="FinTrack Logo" width="24" height="24" />
         </div>
         <span className="logo-text">FinTrack</span>
       </div>

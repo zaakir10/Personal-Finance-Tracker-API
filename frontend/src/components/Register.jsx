@@ -32,7 +32,7 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
     <div className="login-container">
       <div className="card login-card">
         <div className="logo center">
-          <Wallet size={48} color="#6366f1" />
+          <img src="/logo.svg" alt="FinTrack Logo" width="48" height="48" />
           <h1>FinTrack</h1>
         </div>
         
