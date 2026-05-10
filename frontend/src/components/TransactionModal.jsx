@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, DollarSign, Tag, Calendar, Check, Loader2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { X, Tag, Calendar, Check, Loader2, ArrowUpCircle, ArrowDownCircle, Banknote } from 'lucide-react';
 
 const TransactionModal = ({ isOpen, onClose, onSubmit, categories = [], initialData = null }) => {
   const [formData, setFormData] = useState({
@@ -43,7 +43,7 @@ const TransactionModal = ({ isOpen, onClose, onSubmit, categories = [], initialD
     }, initialData?._id || initialData?.id);
 
     setIsSubmitting(false);
-    if (result?.success || result === undefined) { // result === undefined if parent didn't return anything
+    if (result?.success || result === undefined) {
       setIsSuccess(true);
       setTimeout(() => {
         setIsSuccess(false);
@@ -52,304 +52,149 @@ const TransactionModal = ({ isOpen, onClose, onSubmit, categories = [], initialD
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="modal-backdrop"
-        onClick={onClose}
-      >
-        <motion.div
-          initial={{ y: 50, opacity: 0, scale: 0.95 }}
-          animate={{ y: 0, opacity: 1, scale: 1 }}
-          exit={{ y: 50, opacity: 0, scale: 0.95 }}
-          className="modal-content card premium-modal"
-          onClick={e => e.stopPropagation()}
-        >
-          <div className="modal-header-premium">
-            <div className="header-title-group">
-              <h3>{initialData ? 'Edit Transaction' : 'New Transaction'}</h3>
-              <p className="text-muted">Track your financial movement</p>
-            </div>
-            <button className="close-btn" onClick={onClose}><X size={20} /></button>
-          </div>
-
-          <form className="transaction-form-premium" onSubmit={handleSubmit}>
-            {/* Type Selector Tabs */}
-            <div className="type-tabs">
-              <button
-                type="button"
-                className={`type-tab ${formData.type === 'expense' ? 'active expense' : ''}`}
-                onClick={() => setFormData({ ...formData, type: 'expense' })}
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-slate-950/80 dark:bg-slate-950/80 backdrop-blur-md"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ y: 50, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 50, opacity: 0, scale: 0.95 }}
+            className="relative w-full max-w-lg bg-white dark:bg-slate-900 border border-black/10 dark:border-white/10 rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden max-h-[92dvh] flex flex-col"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center px-6 sm:px-8 py-5 sm:py-6 bg-black/[0.02] dark:bg-white/5 border-b border-black/5 dark:border-white/5 shrink-0">
+              <div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{initialData ? 'Edit Transaction' : 'New Transaction'}</h3>
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-widest mt-1">Track your financial movement</p>
+              </div>
+              <button 
+                className="p-2 rounded-full text-slate-400 hover:bg-black/5 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-white transition-all" 
+                onClick={onClose}
               >
-                <ArrowDownCircle size={18} />
-                Expense
-              </button>
-              <button
-                type="button"
-                className={`type-tab ${formData.type === 'income' ? 'active income' : ''}`}
-                onClick={() => setFormData({ ...formData, type: 'income' })}
-              >
-                <ArrowUpCircle size={18} />
-                Income
+                <X size={20} />
               </button>
             </div>
 
-            {/* Main Amount Input */}
-            <div className="amount-input-group">
-              <span className="currency-symbol">$</span>
-              <input
-                type="number"
-                required
-                step="0.01"
-                placeholder="0.00"
-                className="huge-amount-input"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                autoFocus
-              />
-            </div>
-
-            <div className="form-sections">
-              <div className="form-field">
-                <label><Tag size={14} /> Description</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="What was this for?"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                />
+            <form className="p-6 sm:p-8 space-y-6 sm:space-y-8 overflow-y-auto" onSubmit={handleSubmit}>
+              {/* Type Selector */}
+              <div className="grid grid-cols-2 bg-slate-100 dark:bg-slate-950/50 p-1 rounded-2xl border border-black/5 dark:border-white/5 gap-1">
+                <button
+                  type="button"
+                  className={`flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${formData.type === 'expense' ? 'bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                  onClick={() => setFormData({ ...formData, type: 'expense' })}
+                >
+                  <ArrowDownCircle size={18} />
+                  Expense
+                </button>
+                <button
+                  type="button"
+                  className={`flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${formData.type === 'income' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                  onClick={() => setFormData({ ...formData, type: 'income' })}
+                >
+                  <ArrowUpCircle size={18} />
+                  Income
+                </button>
               </div>
 
-              <div className="form-grid">
-                <div className="form-field">
-                  <label><DollarSign size={14} /> Category</label>
-                  <select
-                    required
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  >
-                    <option value="">Select Category</option>
-                    {categories.map(cat => (
-                      <option key={cat.id || cat._id} value={cat.name || cat}>
-                        {cat.name || cat}
-                      </option>
-                    ))}
-                    {!categories.length && (
-                      <>
-                        <option value="Food">Food</option>
-                        <option value="Salary">Salary</option>
-                        <option value="Housing">Housing</option>
-                        <option value="Transport">Transport</option>
-                      </>
-                    )}
-                  </select>
-                </div>
-
-                <div className="form-field">
-                  <label><Calendar size={14} /> Date</label>
+              {/* Amount Input */}
+              <div className="flex flex-col items-center justify-center py-2 sm:py-4 group">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl sm:text-3xl font-black text-slate-400 dark:text-slate-600 group-focus-within:text-indigo-500 transition-colors">$</span>
                   <input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    type="number"
+                    required
+                    step="0.01"
+                    placeholder="0.00"
+                    className="bg-transparent border-none text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 dark:text-white text-center focus:ring-0 w-full max-w-[200px] placeholder:text-slate-300 dark:placeholder:text-white/5"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    autoFocus
                   />
                 </div>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              className={`btn-submit-premium ${isSuccess ? 'success' : ''}`}
-              disabled={isSubmitting || isSuccess}
-            >
-              {isSubmitting ? (
-                <Loader2 className="spinner" size={20} />
-              ) : isSuccess ? (
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}><Check size={20} /></motion.div>
-              ) : (
-                <>{initialData ? 'Update Records' : 'Add to Ledger'}</>
-              )}
-            </button>
-          </form>
-        </motion.div>
-      </motion.div>
+              {/* Form Fields */}
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+                    <Tag size={14} className="text-indigo-500" /> Description
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="What was this for?"
+                    className="w-full bg-slate-100 dark:bg-slate-800/50 border border-black/10 dark:border-white/5 rounded-2xl py-4 px-6 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+                      <Banknote size={14} className="text-indigo-500" /> Category
+                    </label>
+                    <select
+                      required
+                      className="w-full bg-slate-100 dark:bg-slate-800/50 border border-black/10 dark:border-white/5 rounded-2xl py-4 px-6 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all appearance-none cursor-pointer"
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    >
+                      <option value="">Select Category</option>
+                      {categories.map(cat => (
+                        <option key={cat.id || cat._id} value={cat.name || cat}>
+                          {cat.name || cat}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+                      <Calendar size={14} className="text-indigo-500" /> Date
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full bg-slate-100 dark:bg-slate-800/50 border border-black/10 dark:border-white/5 rounded-2xl py-4 px-6 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className={`
+                  w-full py-5 rounded-[1.5rem] font-black text-lg transition-all shadow-xl flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50
+                  ${isSuccess 
+                    ? 'bg-emerald-500 text-white shadow-emerald-500/20' 
+                    : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/20'}
+                `}
+                disabled={isSubmitting || isSuccess}
+              >
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin" size={24} />
+                ) : isSuccess ? (
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}><Check size={24} /></motion.div>
+                ) : (
+                  <>{initialData ? 'Update Records' : 'Add to Ledger'}</>
+                )}
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </AnimatePresence>
-
-    <style>{`
-        .premium-modal {
-          max-width: 480px;
-          padding: 0;
-          overflow: hidden;
-          background: #1e293b;
-          border-color: rgba(255,255,255,0.05);
-        }
-
-        .modal-header-premium {
-          padding: 1.5rem 2rem;
-          background: rgba(255,255,255,0.02);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid var(--border);
-        }
-
-        .header-title-group h3 {
-          font-size: 1.25rem;
-          margin-bottom: 0.125rem;
-        }
-
-        .close-btn {
-          background: transparent;
-          color: var(--text-muted);
-          padding: 0.5rem;
-          border-radius: 50%;
-          transition: all 0.2s;
-        }
-
-        .close-btn:hover {
-          background: rgba(255,255,255,0.05);
-          color: var(--text-main);
-        }
-
-        .transaction-form-premium {
-          padding: 2rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .type-tabs {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.75rem;
-          background: var(--bg-main);
-          padding: 0.375rem;
-          border-radius: 1rem;
-        }
-
-        .type-tab {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          padding: 0.75rem;
-          border-radius: 0.75rem;
-          font-weight: 600;
-          color: var(--text-muted);
-          background: transparent;
-          transition: all 0.2s;
-        }
-
-        .type-tab.active.expense {
-          background: rgba(239, 68, 68, 0.1);
-          color: var(--error);
-        }
-
-        .type-tab.active.income {
-          background: rgba(16, 185, 129, 0.1);
-          color: var(--success);
-        }
-
-        .amount-input-group {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          padding: 1rem 0;
-        }
-
-        .currency-symbol {
-          font-size: 2rem;
-          font-weight: 700;
-          color: var(--text-muted);
-          margin-right: 0.5rem;
-        }
-
-        .huge-amount-input {
-          background: transparent;
-          border: none;
-          font-size: 3.5rem;
-          font-weight: 800;
-          text-align: center;
-          width: auto;
-          max-width: 250px;
-          padding: 0;
-          color: var(--text-main);
-        }
-
-        .huge-amount-input:focus {
-          box-shadow: none;
-        }
-
-        .huge-amount-input::placeholder {
-          color: rgba(255,255,255,0.1);
-        }
-
-        .form-field {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .form-field label {
-          font-size: 0.8125rem;
-          font-weight: 600;
-          color: var(--text-muted);
-          display: flex;
-          align-items: center;
-          gap: 0.375rem;
-        }
-
-        .form-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.25rem;
-          margin-top: 1.25rem;
-        }
-
-        .btn-submit-premium {
-          margin-top: 1rem;
-          width: 100%;
-          padding: 1rem;
-          border-radius: 1rem;
-          background: var(--primary);
-          color: white;
-          font-weight: 700;
-          font-size: 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          transition: all 0.3s;
-          box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-submit-premium:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-submit-premium.success {
-          background: var(--success);
-          box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
-        }
-
-        .spinner {
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </>
   );
 };
 

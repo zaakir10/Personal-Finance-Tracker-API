@@ -1,350 +1,157 @@
-import React, { useState, useRef } from 'react';
-import { User, Camera, LogOut, Settings, ChevronDown, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { 
+  User, 
+  Settings, 
+  LogOut, 
+  Shield, 
+  ChevronDown, 
+  Camera, 
+  Bell, 
+  Activity,
+  Heart,
+  Cloud,
+  X
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const UserMenu = ({ user, onUpload, onLogout, onSettingsClick }) => {
+const UserMenu = ({ user, onUpload, onLogout, onSettingsOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef(null);
+  const menuRef = useRef(null);
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setIsUploading(true);
-      const res = await onUpload(file);
-      setIsUploading(false);
-      if (res.success) {
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsOpen(false);
-      } else {
-        alert(res.error || 'Failed to upload photo');
       }
-    }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) onUpload(file);
   };
 
   return (
-    <div className="user-menu-container">
-      <button className="user-menu-trigger" onClick={() => setIsOpen(!isOpen)}>
-        <div className="avatar-wrapper">
-          {isUploading ? (
-            <Loader2 size={16} className="spinner" />
-          ) : user?.profilePicture ? (
-            <img src={user.profilePicture} alt="Profile" className="avatar-small" />
-          ) : (
-            <div className="avatar-placeholder-small">
-              <User size={16} />
-            </div>
-          )}
+    <div className="relative" ref={menuRef}>
+      {/* Premium Profile Trigger */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className={`
+          flex items-center gap-4 p-2 rounded-2xl transition-all duration-500 group
+          ${isOpen ? 'bg-bg-card border-border shadow-xl' : 'hover:bg-bg-card/50'}
+        `}
+      >
+        <div className="relative">
+          <div className="w-11 h-11 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white overflow-hidden shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
+            {user?.profilePicture ? (
+              <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
+            ) : (
+              user?.name?.charAt(0).toUpperCase()
+            )}
+          </div>
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-4 border-bg-main rounded-full" />
         </div>
-        <span className="user-name-label">{user?.name?.split(' ')[0] || 'User'}</span>
-        <ChevronDown size={14} className={`chevron ${isOpen ? 'rotated' : ''}`} />
+        
+        <div className="hidden lg:flex flex-col items-start text-left">
+          <span className="text-sm font-black text-text-main leading-none group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{user?.name || 'Protocol User'}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-text-muted mt-1">{user?.role || 'Member'}</span>
+        </div>
+        
+        <ChevronDown size={16} className={`text-text-muted transition-transform duration-500 hidden lg:block ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
+      {/* Premium Dropdown Menu */}
       <AnimatePresence>
         {isOpen && (
-          <>
-            <div className="menu-backdrop" onClick={() => setIsOpen(false)} />
-            <motion.div 
-              initial={{ opacity: 0, y: 15, scale: 0.9, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: 15, scale: 0.9, filter: 'blur(10px)' }}
-              className="dropdown-menu premium-glass"
-            >
-              <div className="menu-header">
-                <div className="menu-avatar-large">
-                  {user?.profilePicture ? (
-                    <img src={user.profilePicture} alt="Profile" />
-                  ) : (
-                    <User size={32} />
-                  )}
-                  <button 
-                    className="change-avatar-btn" 
-                    onClick={() => fileInputRef.current.click()}
-                    disabled={isUploading}
-                  >
-                    {isUploading ? <Loader2 size={12} className="spinner" /> : <Camera size={12} />}
-                  </button>
-                </div>
-                <div className="menu-user-info">
-                  <div className="name-role-group">
-                    <h4>{user?.name || 'Anonymous User'}</h4>
-                    <span className={`role-badge ${user?.role || 'user'}`}>
-                      {user?.role === 'admin' ? 'Admin' : 'Member'}
-                    </span>
+          <motion.div 
+            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 15, scale: 0.95 }}
+            className="absolute right-0 mt-4 w-[280px] sm:w-80 bg-bg-card/80 backdrop-blur-3xl border border-border rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden z-[100] shadow-black/20"
+          >
+            {/* Dropdown Header */}
+            <div className="relative p-6 sm:p-8 bg-black/[0.02] dark:bg-white/[0.02] border-b border-border overflow-hidden">
+              <div className="absolute -top-12 -right-12 w-32 h-32 bg-indigo-500/10 blur-[40px] rounded-full" />
+              
+              <div className="relative flex flex-col items-center gap-4">
+                <div className="relative group/avatar">
+                  <div className="w-24 h-24 rounded-[2rem] bg-indigo-600 flex items-center justify-center font-black text-3xl text-white shadow-2xl shadow-indigo-500/30 overflow-hidden ring-4 ring-bg-card">
+                    {user?.profilePicture ? (
+                      <img src={user.profilePicture} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      user?.name?.charAt(0).toUpperCase()
+                    )}
                   </div>
-                  <p>{user?.email}</p>
+                  <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-[2rem] opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm">
+                    <Camera size={24} />
+                    <input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+                  </label>
+                </div>
+                
+                <div className="text-center">
+                  <h4 className="text-xl font-black text-text-main tracking-tight">{user?.name}</h4>
+                  <p className="text-xs font-bold text-text-muted mt-1 uppercase tracking-widest">{user?.email}</p>
                 </div>
               </div>
+            </div>
 
-              <div className="menu-divider" />
+            {/* Menu Items */}
+            <div className="p-3 sm:p-4 grid grid-cols-1 gap-1">
+              <button 
+                onClick={() => { setIsOpen(false); onSettingsOpen(); }}
+                className="flex items-center gap-4 px-6 py-4 rounded-2xl text-text-muted hover:bg-indigo-600 hover:text-white transition-all group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-bg-card border border-border flex items-center justify-center group-hover:bg-white/20 group-hover:border-transparent transition-all">
+                  <Settings size={18} />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-black tracking-tight">Security Access</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Protocol & Auth</span>
+                </div>
+              </button>
 
-              <div className="menu-items">
-                <button className="menu-item" onClick={() => fileInputRef.current.click()} disabled={isUploading}>
-                  <div className="item-icon-bg">
-                    {isUploading ? <Loader2 size={16} className="spinner" /> : <Camera size={16} />}
-                  </div>
-                  <span>{isUploading ? 'Uploading...' : 'Change Photo'}</span>
-                </button>
-                <button className="menu-item" onClick={() => { onSettingsClick(); setIsOpen(false); }}>
-                  <div className="item-icon-bg"><Settings size={16} /></div>
-                  <span>Settings</span>
-                </button>
-                <div className="menu-divider" />
-                <button className="menu-item logout-item" onClick={onLogout}>
-                  <div className="item-icon-bg logout-bg"><LogOut size={16} /></div>
-                  <span>Sign Out</span>
-                </button>
+              <button 
+                className="flex items-center gap-4 px-6 py-4 rounded-2xl text-text-muted hover:bg-indigo-600 hover:text-white transition-all group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-bg-card border border-border flex items-center justify-center group-hover:bg-white/20 group-hover:border-transparent transition-all">
+                  <Activity size={18} />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-black tracking-tight">Performance</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Usage Metrics</span>
+                </div>
+              </button>
+
+              <div className="h-px bg-border my-2 mx-4" />
+
+              <button 
+                onClick={() => { setIsOpen(false); onLogout(); }}
+                className="flex items-center gap-4 px-6 py-4 rounded-2xl text-text-muted hover:bg-rose-600 hover:text-white transition-all group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-center group-hover:bg-white/20 group-hover:border-transparent transition-all">
+                  <LogOut size={18} />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-black tracking-tight">Terminate Session</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Secure Logout</span>
+                </div>
+              </button>
+            </div>
+
+            {/* Dropdown Footer */}
+            <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border-t border-border flex justify-between items-center">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">
+                <Shield size={14} className="text-indigo-500" /> Secure
               </div>
-
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleFileChange} 
-                accept="image/*" 
-                style={{ display: 'none' }} 
-              />
-            </motion.div>
-          </>
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">
+                v4.0.2 <Cloud size={14} />
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
-
-      <style>{`
-        .user-menu-container {
-          position: relative;
-        }
-
-        .user-menu-trigger {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          background: rgba(30, 41, 59, 0.5);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 0.5rem 1rem 0.5rem 0.5rem;
-          border-radius: 100px;
-          color: white;
-          font-weight: 600;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          backdrop-filter: blur(8px);
-        }
-
-        .user-menu-trigger:hover {
-          background: rgba(30, 41, 59, 0.8);
-          border-color: var(--primary);
-          transform: translateY(-1px);
-        }
-
-        .avatar-wrapper {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          overflow: hidden;
-          background: linear-gradient(135deg, var(--primary), #818cf8);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .avatar-small {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .avatar-placeholder-small {
-          color: white;
-        }
-
-        .chevron {
-          color: rgba(255,255,255,0.5);
-          transition: transform 0.3s ease;
-        }
-
-        .chevron.rotated {
-          transform: rotate(180deg);
-        }
-
-        .menu-backdrop {
-          position: fixed;
-          inset: 0;
-          z-index: 90;
-        }
-
-        .premium-glass {
-          position: absolute;
-          top: calc(100% + 1rem);
-          right: 0;
-          width: 300px;
-          z-index: 100;
-          padding: 1.5rem;
-          background: rgba(15, 23, 42, 0.9);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 1.5rem;
-          box-shadow: 
-            0 25px 50px -12px rgba(0, 0, 0, 0.5),
-            0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-        }
-
-        .menu-header {
-          display: flex;
-          align-items: center;
-          gap: 1.25rem;
-          margin-bottom: 1.25rem;
-        }
-
-        .menu-avatar-large {
-          position: relative;
-          width: 64px;
-          height: 64px;
-          border-radius: 50%;
-          background: #334155;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 2px solid rgba(255, 255, 255, 0.1);
-          flex-shrink: 0;
-          overflow: visible;
-        }
-
-        .menu-avatar-large img {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          object-fit: cover;
-        }
-
-        .change-avatar-btn {
-          position: absolute;
-          bottom: 0;
-          right: 0;
-          width: 26px;
-          height: 26px;
-          border-radius: 50%;
-          background: var(--primary);
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 3px solid #0f172a;
-          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-          transition: transform 0.2s;
-        }
-
-        .change-avatar-btn:hover:not(:disabled) {
-          transform: scale(1.1);
-        }
-
-        .change-avatar-btn:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-
-        .menu-user-info h4 {
-          font-size: 1.125rem;
-          font-weight: 700;
-          margin-bottom: 0.25rem;
-          color: white;
-        }
-
-        .menu-user-info p {
-          font-size: 0.8125rem;
-          color: rgba(255,255,255,0.5);
-        }
-
-        .name-role-group {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          margin-bottom: 0.25rem;
-        }
-
-        .role-badge {
-          font-size: 0.625rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          padding: 0.125rem 0.5rem;
-          border-radius: 4px;
-          letter-spacing: 0.05em;
-        }
-
-        .role-badge.admin {
-          background: rgba(99, 102, 241, 0.15);
-          color: var(--primary);
-          border: 1px solid rgba(99, 102, 241, 0.2);
-        }
-
-        .role-badge.user {
-          background: rgba(255, 255, 255, 0.05);
-          color: rgba(255, 255, 255, 0.6);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .menu-divider {
-          height: 1px;
-          background: rgba(255,255,255,0.06);
-          margin: 1rem -1.5rem;
-        }
-
-        .menu-items {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .menu-item {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 0.75rem;
-          border-radius: 1rem;
-          color: rgba(255,255,255,0.7);
-          background: transparent;
-          font-weight: 600;
-          transition: all 0.2s;
-          width: 100%;
-          text-align: left;
-        }
-
-        .item-icon-bg {
-          width: 36px;
-          height: 36px;
-          border-radius: 0.75rem;
-          background: rgba(255,255,255,0.03);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: rgba(255,255,255,0.6);
-          transition: all 0.2s;
-        }
-
-        .menu-item:hover:not(:disabled) {
-          background: rgba(255,255,255,0.05);
-          color: white;
-        }
-
-        .menu-item:hover:not(:disabled) .item-icon-bg {
-          background: rgba(99, 102, 241, 0.15);
-          color: var(--primary);
-        }
-
-        .logout-item:hover:not(:disabled) .item-icon-bg {
-          background: rgba(239, 68, 68, 0.15);
-          color: var(--error);
-        }
-
-        .logout-item:hover:not(:disabled) {
-          color: var(--error);
-        }
-
-        .spinner {
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 };

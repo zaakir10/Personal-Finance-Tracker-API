@@ -1,16 +1,17 @@
 import React from 'react';
 import { 
   LayoutDashboard, 
-  Wallet, 
   CreditCard, 
   TrendingUp, 
   LogOut,
-  PlusCircle,
+  Plus,
   ShieldCheck,
-  Tags
+  Tags,
+  PlusCircle,
+  X
 } from 'lucide-react';
 
-const Sidebar = ({ activeTab, setActiveTab, onLogout, onAddClick, userRole }) => {
+const Sidebar = ({ activeTab, setActiveTab, onLogout, onAddClick, userRole, isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'transactions', icon: CreditCard, label: 'Transactions' },
@@ -23,186 +24,75 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, onAddClick, userRole }) =>
   }
 
   return (
-    <aside className="sidebar premium-sidebar">
-      <div className="logo-section">
-        <div className="logo-icon-bg">
-          <img src="/logo.svg" alt="FinTrack Logo" width="24" height="24" />
+    <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] md:relative md:w-72 md:h-screen bg-bg-card/95 md:bg-bg-card/80 backdrop-blur-2xl border-r border-border flex flex-col transition-transform duration-300 md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0 shadow-[20px_0_40px_rgba(0,0,0,0.1)]' : '-translate-x-full'}`}>
+      {/* Brand Section */}
+      <div className="flex items-center justify-between p-6 md:p-8 mb-4">
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/20 group hover:scale-110 transition-transform cursor-pointer">
+            <img src="/logo.svg" alt="Logo" className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl font-black text-text-main tracking-tight leading-none">FinTrack</h1>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mt-1 block">Premium Edition</span>
+          </div>
         </div>
-        <span className="logo-text">FinTrack</span>
-      </div>
-
-      <div className="sidebar-action">
-        <button className="btn-add-primary" onClick={onAddClick}>
-          <PlusCircle size={20} />
-          <span>Add Transaction</span>
+        <button 
+          className="md:hidden p-2 rounded-xl text-text-muted hover:bg-bg-main transition-colors"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <X size={20} />
         </button>
       </div>
-      
-      <nav className="sidebar-nav">
-        {menuItems.map((item) => (
+
+      {/* Main Nav */}
+      <nav className="flex-1 px-4 py-4 md:py-0 overflow-y-auto no-scrollbar">
+        <div className="flex flex-col gap-2 justify-start">
+          {/* ACTION: NEW TRANSACTION */}
           <button 
-            key={item.id}
-            className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => { onAddClick(); setIsMobileMenuOpen(false); }}
+            className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group bg-bg-main text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white mb-6 border border-indigo-500/10"
           >
-            <div className="nav-icon-wrapper">
-              <item.icon size={20} />
+            <div className="flex items-center justify-center">
+              <PlusCircle size={20} className="group-hover:rotate-90 transition-transform duration-500" />
             </div>
-            <span>{item.label}</span>
-            {activeTab === item.id && <div className="active-indicator" />}
+            <span className="font-black tracking-widest text-[10px] uppercase">New Transaction</span>
           </button>
-        ))}
+
+          <div className="h-px bg-border mb-4" />
+
+          {menuItems.map((item) => {
+            const isActive = activeTab === item.id;
+            return (
+              <button 
+                key={item.id}
+                onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); }}
+                className={`
+                  relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group
+                  ${isActive 
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                    : 'text-text-muted hover:bg-bg-main hover:text-indigo-500'}
+                `}
+              >
+                <div className="flex items-center justify-center">
+                  <item.icon size={20} className={isActive ? 'text-white' : 'group-hover:scale-110 transition-transform'} />
+                </div>
+                <span className="font-bold tracking-tight text-sm">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </nav>
 
-      <div className="sidebar-footer">
-        <button className="btn-logout-sidebar" onClick={onLogout}>
-          <div className="logout-icon-wrapper">
-            <LogOut size={18} />
-          </div>
-          <span>Logout</span>
+      {/* Bottom Actions */}
+      <div className="p-6 md:p-8 border-t border-border mt-auto">
+        <button 
+          onClick={onLogout}
+          className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-500 font-bold hover:text-rose-400 transition-all group"
+        >
+          <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-xs font-black uppercase tracking-widest">Sign Out</span>
         </button>
       </div>
-
-      <style>{`
-        .premium-sidebar {
-          background: #0f172a;
-          border-right: 1px solid rgba(255, 255, 255, 0.05);
-          display: flex;
-          flex-direction: column;
-          padding: 2rem 1.5rem;
-          min-width: 280px;
-        }
-
-        .logo-section {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          margin-bottom: 3rem;
-          padding-left: 0.5rem;
-        }
-
-        .logo-icon-bg {
-          width: 40px;
-          height: 40px;
-          background: linear-gradient(135deg, var(--primary), #818cf8);
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.5);
-        }
-
-        .logo-text {
-          font-size: 1.5rem;
-          font-weight: 800;
-          letter-spacing: -0.025em;
-          color: white;
-        }
-
-        .sidebar-action {
-          margin-bottom: 2.5rem;
-        }
-
-        .btn-add-primary {
-          width: 100%;
-          background: var(--primary);
-          color: white;
-          border: none;
-          padding: 1rem;
-          border-radius: 1.25rem;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.75rem;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-          cursor: pointer;
-        }
-
-        .btn-add-primary:hover {
-          transform: translateY(-2px);
-          background: #4f46e5;
-          box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.5);
-        }
-
-        .sidebar-nav {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          flex: 1;
-        }
-
-        .nav-link {
-          position: relative;
-          display: flex;
-          align-items: center;
-          gap: 1.25rem;
-          padding: 0.875rem 1rem;
-          border-radius: 1rem;
-          color: rgba(255, 255, 255, 0.5);
-          background: transparent;
-          font-weight: 600;
-          transition: all 0.2s;
-          border: none;
-          width: 100%;
-          text-align: left;
-          cursor: pointer;
-        }
-
-        .nav-link:hover {
-          background: rgba(255, 255, 255, 0.03);
-          color: rgba(255, 255, 255, 0.9);
-        }
-
-        .nav-link.active {
-          background: rgba(99, 102, 241, 0.1);
-          color: var(--primary);
-        }
-
-        .nav-icon-wrapper {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .active-indicator {
-          position: absolute;
-          left: -1.5rem;
-          width: 4px;
-          height: 24px;
-          background: var(--primary);
-          border-radius: 0 4px 4px 0;
-          box-shadow: 4px 0 12px rgba(99, 102, 241, 0.5);
-        }
-
-        .sidebar-footer {
-          margin-top: auto;
-          padding-top: 1.5rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-logout-sidebar {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          width: 100%;
-          padding: 0.875rem 1rem;
-          border-radius: 1rem;
-          color: rgba(255, 255, 255, 0.5);
-          background: transparent;
-          border: none;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-          text-align: left;
-        }
-
-        .btn-logout-sidebar:hover {
-          background: rgba(239, 68, 68, 0.1);
-          color: var(--error);
-        }
-      `}</style>
     </aside>
   );
 };

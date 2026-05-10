@@ -1,110 +1,77 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, MoreHorizontal } from 'lucide-react';
 
 const StatCard = ({ label, value, icon: Icon, colorClass, gradient, trend, delay = 0 }) => {
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }} 
-      animate={{ opacity: 1, scale: 1 }} 
-      transition={{ 
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
         delay,
-        duration: 0.4,
+        duration: 0.8,
         ease: [0.23, 1, 0.32, 1]
       }}
-      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      className={`card premium-stat-card ${gradient ? 'gradient-mode' : ''}`}
+      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+      className={`
+        relative overflow-hidden group rounded-[2rem] md:rounded-[2.5rem] p-5 sm:p-6 md:p-8 min-h-[150px] sm:min-h-[180px] flex flex-col justify-between transition-all duration-500
+        ${gradient
+          ? 'bg-indigo-600 shadow-2xl shadow-indigo-600/30 text-white'
+          : 'bg-bg-card/40 backdrop-blur-3xl border border-border hover:border-indigo-500/20 shadow-xl shadow-black/5'}
+      `}
     >
-      <div className="stat-content">
-        <div className="stat-header">
-          <div className={`icon-container ${colorClass || ''}`}>
-            <Icon size={20} />
-          </div>
-          {trend && (
-            <div className={`trend-badge ${trend > 0 ? 'trend-up' : 'trend-down'}`}>
+      {/* Decorative Blur - Only for non-gradient cards */}
+      {!gradient && (
+        <div className={`absolute -top-12 -right-12 w-32 h-32 blur-[60px] opacity-20 dark:opacity-10 rounded-full ${colorClass?.includes('text-emerald-500') ? 'bg-emerald-500' : colorClass?.includes('text-rose-500') ? 'bg-rose-500' : 'bg-indigo-500'}`} />
+      )}
+
+      <div className="flex justify-between items-start z-10">
+        <div className={`
+          w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3
+          ${gradient ? 'bg-white/20 text-white shadow-lg shadow-white/5' : 'bg-indigo-500/5 text-indigo-500 dark:text-indigo-400 dark:bg-white/5'}
+          ${colorClass?.includes('text-emerald-500') && !gradient ? 'text-emerald-500 bg-emerald-500/5' : ''}
+          ${colorClass?.includes('text-rose-500') && !gradient ? 'text-rose-500 bg-rose-500/5' : ''}
+        `}>
+          <Icon size={24} />
+        </div>
+
+        <div className="flex items-center gap-3">
+          {trend !== undefined && (
+            <div className={`
+              flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest
+              ${trend > 0
+                ? (gradient ? 'bg-white/20 text-white' : 'bg-emerald-500/10 text-emerald-500 dark:text-emerald-400')
+                : (gradient ? 'bg-white/20 text-white' : 'bg-rose-500/10 text-rose-500 dark:text-rose-400')}
+            `}>
               {trend > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
               <span>{Math.abs(trend)}%</span>
             </div>
           )}
-        </div>
-        
-        <div className="stat-body">
-          <span className="stat-label">{label}</span>
-          <h2 className={`stat-value ${colorClass || ''}`}>{value}</h2>
+          <button className={`p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${gradient ? 'text-white/50' : 'text-text-muted'}`}>
+            <MoreHorizontal size={16} />
+          </button>
         </div>
       </div>
 
-      <style>{`
-        .premium-stat-card {
-          position: relative;
-          overflow: hidden;
-          padding: 1.5rem;
-          background: rgba(30, 41, 59, 0.4);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          min-height: 160px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-        }
+      <div className="mt-8 z-10">
+        <span className={`
+          block text-[10px] font-black uppercase tracking-[0.2em] mb-2
+          ${gradient ? 'text-white/70' : 'text-text-muted'}
+        `}>
+          {label}
+        </span>
+        <div className="flex items-baseline gap-1">
+          <h2 className={`
+            text-3xl md:text-4xl font-black tracking-tighter
+            ${gradient ? 'text-white' : (colorClass || 'text-text-main')}
+          `}>
+            {value}
+          </h2>
+        </div>
+      </div>
 
-        .gradient-mode {
-          background: linear-gradient(135deg, var(--primary), #4f46e5);
-          border: none;
-        }
-
-        .gradient-mode .stat-label { color: rgba(255, 255, 255, 0.8) !important; }
-        .gradient-mode .stat-value { color: white !important; }
-        .gradient-mode .icon-container { background: rgba(255, 255, 255, 0.2); color: white; }
-
-        .stat-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 1.5rem;
-        }
-
-        .icon-container {
-          width: 42px;
-          height: 42px;
-          border-radius: 12px;
-          background: rgba(255, 255, 255, 0.03);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--primary);
-        }
-
-        .trend-badge {
-          display: flex;
-          align-items: center;
-          gap: 0.25rem;
-          padding: 0.375rem 0.625rem;
-          border-radius: 100px;
-          font-size: 0.75rem;
-          font-weight: 700;
-        }
-
-        .trend-up { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-        .trend-down { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-
-        .stat-label {
-          display: block;
-          font-size: 0.875rem;
-          font-weight: 600;
-          color: var(--text-muted);
-          margin-bottom: 0.5rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .stat-value {
-          font-size: 1.75rem;
-          font-weight: 800;
-          letter-spacing: -0.02em;
-          margin: 0;
-        }
-      `}</style>
+      {/* Subtle Pattern Overlay */}
+      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
     </motion.div>
   );
 };
