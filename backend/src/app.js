@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 
 import logger from './config/logger.js';
 import swaggerDocs from './swagger/swaggerDocs.js';
@@ -48,6 +49,7 @@ app.use(helmet({
   },
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 // Request logging
 app.use((req, res, next) => {

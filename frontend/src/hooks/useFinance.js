@@ -55,8 +55,8 @@ export const useFinance = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if (isAuthenticated) {
       fetchData();
     } else {
       setLoading(false);

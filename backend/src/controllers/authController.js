@@ -7,6 +7,26 @@ const generateToken = (id) => {
   });
 };
 
+const sendTokenResponse = (user, statusCode, res) => {
+  const token = generateToken(user._id);
+  const options = {
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  };
+  res.status(statusCode).cookie('token', token, options).json({
+    success: true,
+    data: {
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      profilePicture: user.profilePicture
+    }
+  });
+};
+
 // @desc    Register new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -33,16 +53,7 @@ export const register = async (req, res, next) => {
     });
 
     if (user) {
-      res.status(201).json({
-        success: true,
-        data: {
-          _id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          token: generateToken(user._id),
-        }
-      });
+      sendTokenResponse(user, 201, res);
     } else {
       res.status(400);
       throw new Error('Invalid user data');
@@ -62,16 +73,7 @@ export const login = async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (user && (await user.matchPassword(password))) {
-      res.json({
-        success: true,
-        data: {
-          _id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          token: generateToken(user._id),
-        }
-      });
+      sendTokenResponse(user, 200, res);
     } else {
       res.status(401);
       throw new Error('Invalid email or password');
@@ -79,6 +81,20 @@ export const login = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+// @desc    Logout user / clear cookie
+// @route   POST /api/auth/logout
+// @access  Public
+export const logout = (req, res) => {
+  res.cookie('token', 'none', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  });
+
+  res.status(200).json({ success: true, message: 'User logged out' });
 };
 
 // @desc    Get user profile

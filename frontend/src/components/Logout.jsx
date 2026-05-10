@@ -1,12 +1,22 @@
 import React, { useEffect } from 'react';
 import { Wallet, CheckCircle } from 'lucide-react';
+import { authAPI } from '../api/api';
 import { motion } from 'framer-motion';
 
 const Logout = ({ onComplete }) => {
   useEffect(() => {
-    localStorage.removeItem('token');
-    const timer = setTimeout(onComplete, 1500);
-    return () => clearTimeout(timer);
+    const performLogout = async () => {
+      try {
+        await authAPI.logout();
+      } catch (e) {
+        console.error('Logout error', e);
+      }
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('token'); // Cleanup legacy tokens
+      setTimeout(onComplete, 1500);
+    };
+    
+    performLogout();
   }, [onComplete]);
 
   return (

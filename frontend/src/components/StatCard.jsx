@@ -16,8 +16,8 @@ const StatCard = ({ label, value, icon: Icon, colorClass, gradient, trend, delay
       className={`
         relative overflow-hidden group rounded-[2rem] md:rounded-[2.5rem] p-5 sm:p-6 md:p-8 min-h-[150px] sm:min-h-[180px] flex flex-col justify-between transition-all duration-500
         ${gradient
-          ? 'bg-indigo-600 shadow-2xl shadow-indigo-600/30 text-white'
-          : 'bg-bg-card/40 backdrop-blur-3xl border border-border hover:border-indigo-500/20 shadow-xl shadow-black/5'}
+          ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-700 animate-gradient shadow-2xl shadow-indigo-600/40 text-white border border-white/10'
+          : 'bg-bg-card/60 backdrop-blur-3xl border border-border hover:border-indigo-500/30 hover:shadow-2xl hover:shadow-indigo-500/10 shadow-xl shadow-black/5'}
       `}
     >
       {/* Decorative Blur - Only for non-gradient cards */}
@@ -27,10 +27,10 @@ const StatCard = ({ label, value, icon: Icon, colorClass, gradient, trend, delay
 
       <div className="flex justify-between items-start z-10">
         <div className={`
-          w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3
-          ${gradient ? 'bg-white/20 text-white shadow-lg shadow-white/5' : 'bg-indigo-500/5 text-indigo-500 dark:text-indigo-400 dark:bg-white/5'}
-          ${colorClass?.includes('text-emerald-500') && !gradient ? 'text-emerald-500 bg-emerald-500/5' : ''}
-          ${colorClass?.includes('text-rose-500') && !gradient ? 'text-rose-500 bg-rose-500/5' : ''}
+          w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6
+          ${gradient ? 'bg-white/20 text-white shadow-lg shadow-white/10 backdrop-blur-md' : 'bg-indigo-500/5 text-indigo-500 dark:text-indigo-400 dark:bg-white/5'}
+          ${colorClass?.includes('text-emerald-500') && !gradient ? 'text-emerald-500 bg-emerald-500/10' : ''}
+          ${colorClass?.includes('text-rose-500') && !gradient ? 'text-rose-500 bg-rose-500/10' : ''}
         `}>
           <Icon size={24} />
         </div>

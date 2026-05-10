@@ -13,9 +13,8 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
     setLoading(true);
     try {
       const res = await authAPI.register(formData);
-      const token = res.data.token || res.data.data?.token;
-      if (token) {
-        localStorage.setItem('token', token);
+      if (res.data.success) {
+        localStorage.setItem('isAuthenticated', 'true');
         onRegisterSuccess();
       } else {
         setError('Registration successful, please sign in.');
@@ -40,8 +39,8 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
             <div className="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-indigo-600/30 mb-8 animate-pulse-soft">
               <img src="/logo.svg" alt="Logo" className="w-10 h-10" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-3">Join Nexus.</h1>
-            <p className="text-slate-500 font-bold tracking-tight text-center">Establish your identity and start tracking your financial intelligence.</p>
+            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-3">Create an Account</h1>
+            <p className="text-slate-500 font-bold tracking-tight text-center">Sign up to start tracking your personal finances today.</p>
           </div>
 
           {error && (
@@ -52,7 +51,7 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-2">Full Legal Name</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-2">Full Name</label>
               <div className="relative group">
                 <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-600 group-focus-within:text-indigo-400 transition-colors" size={20} />
                 <input 
@@ -67,12 +66,12 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
             </div>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-2">Communications (Email)</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-2">Email Address</label>
               <div className="relative group">
                 <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-600 group-focus-within:text-indigo-400 transition-colors" size={20} />
                 <input 
                   type="email" 
-                  placeholder="name@nexus.com" 
+                  placeholder="name@example.com" 
                   required 
                   className="w-full bg-slate-100/80 dark:bg-slate-950/50 border border-black/10 dark:border-white/5 rounded-[1.5rem] py-5 pl-14 pr-6 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold"
                   value={formData.email}
@@ -82,7 +81,7 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
             </div>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-2">Secure Passphrase</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-2">Password</label>
               <div className="relative group">
                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-600 group-focus-within:text-indigo-400 transition-colors" size={20} />
                 <input 
@@ -105,7 +104,7 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
                 <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Create Account</span>
+                  <span>Sign Up</span>
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </>
               )}
@@ -113,12 +112,12 @@ const Register = ({ onRegisterSuccess, onSwitchToLogin }) => {
           </form>
 
           <div className="mt-8 sm:mt-12 pt-7 sm:pt-10 border-t border-black/5 dark:border-white/5 flex flex-col items-center gap-4">
-            <span className="text-slate-500 font-bold text-sm tracking-tight">Already part of the network?</span>
+            <span className="text-slate-500 font-bold text-sm tracking-tight">Already have an account?</span>
             <button 
               className="text-slate-800 dark:text-white hover:text-indigo-500 dark:hover:text-indigo-400 font-black tracking-[0.1em] text-xs uppercase transition-all" 
               onClick={onSwitchToLogin}
             >
-              Authenticate Identity
+              Sign In
             </button>
           </div>
         </div>

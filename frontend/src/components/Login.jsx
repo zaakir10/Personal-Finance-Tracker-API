@@ -13,12 +13,11 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
     setLoading(true);
     try {
       const res = await authAPI.login({ email: formData.email, password: formData.password });
-      const token = res.data.token || res.data.data?.token;
-      if (token) {
-        localStorage.setItem('token', token);
+      if (res.data.success) {
+        localStorage.setItem('isAuthenticated', 'true');
         onLoginSuccess();
       } else {
-        setError('Login failed. No token received.');
+        setError('Login failed. Please try again.');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid credentials');
@@ -39,8 +38,8 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
             <div className="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-indigo-600/30 mb-8 animate-pulse-soft">
               <img src="/logo.svg" alt="Logo" className="w-10 h-10" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-3">FinTrack.</h1>
-            <p className="text-slate-500 dark:text-slate-500 font-bold tracking-tight text-center">Secure access to your high-frequency financial intelligence.</p>
+            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-3">Welcome Back</h1>
+            <p className="text-slate-500 dark:text-slate-500 font-bold tracking-tight text-center">Sign in to securely access your personal finance tracker.</p>
           </div>
 
           {error && (
@@ -51,12 +50,12 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-2">Access Key (Email)</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-2">Email Address</label>
               <div className="relative group">
                 <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-600 group-focus-within:text-indigo-400 transition-colors" size={20} />
                 <input 
                   type="email" 
-                  placeholder="name@nexus.com" 
+                  placeholder="name@example.com" 
                   required 
                   className="w-full bg-slate-100/80 dark:bg-slate-950/50 border border-black/10 dark:border-white/5 rounded-[1.5rem] py-5 pl-14 pr-6 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold"
                   value={formData.email}
@@ -67,7 +66,7 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
 
             <div className="space-y-3">
               <div className="flex justify-between items-center px-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Passphrase</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Password</label>
                 <button type="button" className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 hover:text-indigo-400 transition-colors">Forgot?</button>
               </div>
               <div className="relative group">
@@ -92,7 +91,7 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
                 <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Initialize Dashboard</span>
+                  <span>Sign In</span>
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </>
               )}
@@ -100,12 +99,12 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
           </form>
 
           <div className="mt-8 sm:mt-12 pt-7 sm:pt-10 border-t border-black/5 dark:border-white/5 flex flex-col items-center gap-4">
-            <span className="text-slate-500 font-bold text-sm tracking-tight">New to the network?</span>
+            <span className="text-slate-500 font-bold text-sm tracking-tight">Don't have an account?</span>
             <button 
               className="text-slate-800 dark:text-white hover:text-indigo-500 dark:hover:text-indigo-400 font-black tracking-[0.1em] text-xs uppercase transition-all" 
               onClick={onSwitchToRegister}
             >
-              Establish Identity
+              Sign Up
             </button>
           </div>
         </div>

@@ -28,7 +28,7 @@ import Logout from './components/Logout';
 import { useFinance } from './hooks/useFinance';
 
 function App() {
-  const [authView, setAuthView] = useState(localStorage.getItem('token') ? 'authenticated' : 'login');
+  const [authView, setAuthView] = useState(localStorage.getItem('isAuthenticated') ? 'authenticated' : 'login');
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showModal, setShowModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -92,6 +92,9 @@ function App() {
     (t.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (t.category || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   if (authView === 'login') return <Login onLoginSuccess={handleLoginSuccess} onSwitchToRegister={() => setAuthView('register')} />;
   if (authView === 'register') return <Register onRegisterSuccess={handleLoginSuccess} onSwitchToLogin={() => setAuthView('login')} />;
@@ -180,9 +183,9 @@ function App() {
                         <LayoutGrid size={12} /> Live Overview
                       </div>
                       <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-text-main leading-tight">
-                        Morning, <span className="bg-gradient-to-r from-indigo-500 to-indigo-700 bg-clip-text text-transparent">{user?.name?.split(' ')[0] || 'User'}</span>.
+                        {greeting}, <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 animate-gradient bg-clip-text text-transparent">{user?.name?.split(' ')[0] || 'User'}</span>.
                       </h1>
-                      <p className="text-text-muted text-lg font-medium">Your portfolio grew by <span className="text-emerald-500 font-bold">12.5%</span> this month. Keep it up!</p>
+                      <p className="text-text-muted text-lg font-medium">Here's your financial intelligence overview for today.</p>
                     </div>
                     
                     <button 
